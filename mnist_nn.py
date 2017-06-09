@@ -64,6 +64,7 @@ def conv_network(batch_size):
 
 def main(argv=None):
     modelpath = "/tmp/model.ckpt"
+    modelpath2 = "tmp2/model.ckpt"
     
     data_sets = input_data.read_data_sets(FLAGS.input_data_dir)
     with tf.Graph().as_default():
@@ -120,7 +121,7 @@ def main(argv=None):
         n_evals = data_sets.test.num_examples // FLAGS.batch_size
         for i in xrange(n_evals):
             image_b, label_b = data_sets.test.next_batch(FLAGS.batch_size)
-            _, lv, av = sess.run([train_op, loss, acc],
+            _, lv, av = sess2.run([train_op, loss, acc],
                                  feed_dict={images: image_b,
                                             labels: label_b,
                                             is_training: False})
