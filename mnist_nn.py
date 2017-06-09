@@ -109,13 +109,13 @@ def main(argv=None):
                 print(msg.format(it, lv, av))
         print('Training completed')
         
-        save_path = saver.save(sess, model_path) # Save parameters to disk
+        save_path = saver.save(sess, modelpath) # Save parameters to disk
         print("Model saved in file: %s" % save_path)
                 
         sess2 = tf.Session()
         sess2.run(init)
         
-        saver.restore(sess2, model_path)
+        saver.restore(sess2, modelpath)
         
         avg_accuracy = 0.0
         n_evals = data_sets.test.num_examples // FLAGS.batch_size
