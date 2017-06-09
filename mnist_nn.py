@@ -30,7 +30,7 @@ def conv_network(batch_size):
     labels = tf.placeholder(tf.int32, shape=(batch_size), name='labels')
     is_training = tf.placeholder(tf.bool, shape=(), name='is_training')
     input_layer = tf.reshape(images, [-1, 28, 28, 1])
-    conv1 = tf.nn.conv2d(inputs=input_layer,
+    conv1 = tf.layers.conv2d(inputs=input_layer,
                              filters=32,
                              kernel_size=[5, 5],
                              padding="same",
@@ -63,6 +63,8 @@ def conv_network(batch_size):
 
 
 def main(argv=None):
+    modelpath = "/tmp/model.ckpt"
+    
     data_sets = input_data.read_data_sets(FLAGS.input_data_dir)
     with tf.Graph().as_default():
         images, labels, is_training, logits, loss, acc = conv_network(
@@ -80,9 +82,13 @@ def main(argv=None):
             tf.summary.image('filters', tf.transpose(I0, [3, 0, 1, 2]),
                              max_outputs=32)
         summary = tf.summary.merge_all()
+        
+        saver = tf.train.Saver() # included Saver
+        
         sess = tf.Session()
         summary_writer = tf.summary.FileWriter('./logs/' + FLAGS.run,
-                                               sess.graph)
+                                               sess.graph)                                               
+    
         sess.run(init)
 
         for it in xrange(FLAGS.max_iter):
@@ -101,6 +107,15 @@ def main(argv=None):
                 msg = 'Iteration {:5d}: loss is {:7.4f}, accuracy is {:6.2f}%'
                 print(msg.format(it, lv, av))
         print('Training completed')
+        
+        save_path = saver.save(sess, model_path) # Save parameters to disk
+        print("Model saved in file: %s" % save_path)
+                
+        sess2 = tf.Session()
+        sess2.run(init)
+        
+        saver.restore(sess2, model_path)
+        
         avg_accuracy = 0.0
         n_evals = data_sets.test.num_examples // FLAGS.batch_size
         for i in xrange(n_evals):
@@ -113,6 +128,8 @@ def main(argv=None):
         avg_accuracy /= n_evals
         print('Test accuracy is {:.2f}%'.format(avg_accuracy))
 
+
+        
 
 if __name__ == '__main__':
     tf.app.run()
