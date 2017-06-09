@@ -67,7 +67,8 @@ def main(argv=None):
     modelpath2 = "tmp2/model.ckpt"
     
     data_sets = input_data.read_data_sets(FLAGS.input_data_dir)
-    with tf.Graph().as_default():
+    g1 = tf.Graph()
+    with g1.as_default():
         images, labels, is_training, logits, loss, acc = conv_network(
             FLAGS.batch_size)
         optimizer = tf.train.AdamOptimizer(FLAGS.learning_rate)
@@ -111,7 +112,9 @@ def main(argv=None):
         
         save_path = saver.save(sess, modelpath) # Save parameters to disk
         print("Model saved in file: %s" % save_path)
-                
+        
+    g2 = tf.Graph()
+    with g2.as_default():
         sess2 = tf.Session()
         sess2.run(init)
         
