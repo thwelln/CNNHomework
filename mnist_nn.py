@@ -115,9 +115,28 @@ def main(argv=None):
         
     g2 = tf.Graph()
     with g2.as_default():
+        images, labels, is_training, logits, loss, acc = conv_network(
+            FLAGS.batch_size)
+        optimizer = tf.train.AdamOptimizer(FLAGS.learning_rate)
+        global_step = tf.Variable(0, name='global_step', trainable=False)
+        train_op = optimizer.minimize(loss, global_step=global_step)
+        init = tf.global_variables_initializer()
+        with tf.variable_scope('conv2d') as scope:
+            scope.reuse_variables()
+            kernel = tf.get_variable('kernel')
+            k_min = tf.reduce_min(kernel)
+            k_max = tf.reduce_max(kernel)
+            I0 = (kernel - k_min) / (k_max - k_min)
+            tf.summary.image('filters', tf.transpose(I0, [3, 0, 1, 2]),
+                             max_outputs=32)
+        summary = tf.summary.merge_all()
+        
+        summary_writer = tf.summary.FileWriter('./logs/' + FLAGS.run,
+                                               sess.graph)
         sess2 = tf.Session()
-        saver.restore(sess2, modelpath)
         sess2.run(init)
+        saver.restore(sess2, modelpath)
+
         
         
         
