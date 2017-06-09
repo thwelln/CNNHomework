@@ -116,9 +116,10 @@ def main(argv=None):
     g2 = tf.Graph()
     with g2.as_default():
         sess2 = tf.Session()
+        saver.restore(sess2, modelpath)
         sess2.run(init)
         
-        saver.restore(sess2, modelpath)
+        
         
         avg_accuracy = 0.0
         n_evals = data_sets.test.num_examples // FLAGS.batch_size
