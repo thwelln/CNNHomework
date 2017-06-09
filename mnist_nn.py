@@ -135,7 +135,7 @@ def main(argv=None):
                                                sess.graph)
         sess2 = tf.Session()
         sess2.run(init)
-        saver.restore(sess2, modelpath)
+        g1.saver.restore(sess2, modelpath)
 
         
         
