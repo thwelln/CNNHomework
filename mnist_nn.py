@@ -16,7 +16,7 @@ tf.app.flags.DEFINE_integer('batch_size', 32,
                             """Number of images in a batch""")
 tf.app.flags.DEFINE_integer('n_hidden', 300,
                             """Number of hidden units""")
-tf.app.flags.DEFINE_integer('max_iter', 10000,
+tf.app.flags.DEFINE_integer('max_iter', 1,
                             """Maximum number of training iterations""")
 tf.app.flags.DEFINE_string('run', 'run1',
                            """Subdirectory name for log files""")
