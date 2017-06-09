@@ -61,8 +61,14 @@ def two_layer_network(n_hidden, batch_size, lambda_l1, lambda_l2):
         labels = tf.to_int64(labels)
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
             labels=labels, logits=logits, name='xentropy')
-        loss = tf.reduce_mean(cross_entropy, name='xentropy_mean')
-        tf.summary.scalar('loss', loss)
+        data_loss = tf.reduce_mean(cross_entropy, name='xentropy_mean')
+        l1_loss = tf.nn.l1_loss(W0) + tf.nn.l1_loss(W1)
+        l2_loss = tf.nn.l2_loss(W0) + tf.nn.l2_loss(W1)
+        loss = data_loss + lambda_l1 * l1_loss + lambda_l2 * l2_loss
+        tf.summary.scalar('data loss', data_loss)
+        tf.summary.scalar('L1 loss', l1_loss)
+        tf.summary.scalar('L2 loss', l2_loss)
+        tf.summary.scalar('combined loss', loss)
     with tf.name_scope('accuracy'):
         correct = tf.nn.in_top_k(logits, labels, 1)
         n_correct = tf.to_float(tf.reduce_sum(tf.cast(correct, tf.int32)))
