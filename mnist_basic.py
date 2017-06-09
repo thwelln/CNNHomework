@@ -62,11 +62,9 @@ def two_layer_network(n_hidden, batch_size, lambda_l1, lambda_l2):
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
             labels=labels, logits=logits, name='xentropy')
         data_loss = tf.reduce_mean(cross_entropy, name='xentropy_mean')
-        l1_regularizer = tf.contrib.layers.l1_regularizer(scale=lambda_l1, scope=None)
-        l2_regularizer = tf.contrib.layers.l2_regularizer(scale=lambda_l2, scope=None)
-        l1_loss = tf.contrib.layers.apply_regularization(l1_regularizer, W0) + tf.contrib.layers.apply_regularization(l1_regularizer, W1)
-        l2_loss = tf.contrib.layers.apply_regularization(l2_regularizer, W0) + tf.contrib.layers.apply_regularization(l2_regularizer, W1)
-        loss = data_loss + l1_loss + l2_loss
+        l1_loss = tf.reduce_sum(tf.abs(W0)) + tf.reduce_sum(tf.abs(W1))
+        l2_loss = tf.nn.l2_loss(W0) + tf.nn.l2_loss(W1)
+        loss = data_loss + lambda_l1 * l1_loss + lambda_l2 * l2_loss
         tf.summary.scalar('data loss', data_loss)
         tf.summary.scalar('L1 loss', l1_loss)
         tf.summary.scalar('L2 loss', l2_loss)
