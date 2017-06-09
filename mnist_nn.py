@@ -134,8 +134,9 @@ def main(argv=None):
         summary_writer = tf.summary.FileWriter('./logs/' + FLAGS.run,
                                                sess.graph)
         sess2 = tf.Session()
-        sess2.run(init)
-        g1.saver.restore(sess2, modelpath)
+        sess2.run(init)       
+        saver = tf.train.Saver() # included Saver
+        saver.restore(sess2, modelpath)
 
         
         
