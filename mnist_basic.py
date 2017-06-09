@@ -17,6 +17,10 @@ tf.app.flags.DEFINE_integer('batch_size', 32,
                             """Number of images in a batch""")
 tf.app.flags.DEFINE_integer('n_hidden', 300,
                             """Number of hidden units""")
+tf.app.flags.DEFINE_float('r1_strength', 0.3,
+                          """R1 normalisation strength""")
+tf.app.flags.DEFINE_float('r2_strength', 0.3,
+                          """R1 normalisation strength""")
 tf.app.flags.DEFINE_integer('max_iter', 10000,
                             """Maximum number of training iterations""")
 tf.app.flags.DEFINE_string('run', 'run1',
@@ -24,7 +28,7 @@ tf.app.flags.DEFINE_string('run', 'run1',
 N_CLASSES = 10
 
 
-def two_layer_network(n_hidden, batch_size):
+def two_layer_network(n_hidden, batch_size, r1_strength, r2_strength):
     images = tf.placeholder(tf.float32, shape=(batch_size,
                                                mnist.IMAGE_PIXELS),
                             name='images')
@@ -71,7 +75,9 @@ def main(argv=None):
     data_sets = input_data.read_data_sets(FLAGS.input_data_dir)
     with tf.Graph().as_default():
         images, labels, logits, loss, acc = two_layer_network(FLAGS.n_hidden,
-                                                              FLAGS.batch_size)
+                                                              FLAGS.batch_size,
+                                                              FLAGS.r1_strength,
+                                                              FLAGS.r2_strength)
         optimizer = tf.train.AdamOptimizer(FLAGS.learning_rate)
         global_step = tf.Variable(0, name='global_step', trainable=False)
         train_op = optimizer.minimize(loss, global_step=global_step)
